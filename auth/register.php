@@ -16,7 +16,7 @@ require_once __DIR__ . '/../vendor/PHPMailer-master/src/SMTP.php';
 
 // sau khi đã sinh $code, thay phần mail() bằng PHPMailer:
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 // ---------- helper functions ----------
 function e($s)
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // generate code securely
         try {
             $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        } catch (Exception $ex) {
+        } catch (\Throwable $ex) {
             $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         }
 
@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $code,
                 $expires
             ]);
-        } catch (Exception $ex) {
+        } catch (\Throwable $ex) {
             error_log("Pending insert failed: " . $ex->getMessage());
             $_SESSION['global_error'] = [
                 'title' => 'Lỗi máy chủ',
@@ -196,9 +196,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $sent = false;
 
+                $mailConfig = [];
+                $mailConfigFile = __DIR__ . '/../includes/mail_config.php';
+                if (is_file($mailConfigFile)) {
+                    $loadedConfig = require $mailConfigFile;
+                    if (is_array($loadedConfig)) {
+                        $mailConfig = $loadedConfig;
+                    }
+                }
+
+                $smtpHost = getenv('FB_SMTP_HOST') ?: ($mailConfig['SMTP_HOST'] ?? '');
+                $smtpPort = (int)(getenv('FB_SMTP_PORT') ?: ($mailConfig['SMTP_PORT'] ?? 587));
+                $smtpUser = getenv('FB_SMTP_USER') ?: ($mailConfig['SMTP_USER'] ?? '');
+                $smtpPass = getenv('FB_SMTP_PASS') ?: ($mailConfig['SMTP_PASS'] ?? '');
+                $smtpSecure = getenv('FB_SMTP_SECURE') ?: ($mailConfig['SMTP_SECURE'] ?? 'tls');
+                $fromEmail = getenv('FB_FROM_EMAIL') ?: ($mailConfig['FROM_EMAIL'] ?? $smtpUser);
+                $siteName = getenv('FB_SITE_NAME') ?: ($mailConfig['SITE_NAME'] ?? 'Facebook');
+
                 if (class_exists('\PHPMailer\PHPMailer\PHPMailer')) {
                     try {
-                        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+                        $mail = new PHPMailer(true);
 
                         // Debug: 0 = off, 2 = client+server messages. Mở khi debugging, tắt (0) khi OK.
                         $mail->SMTPDebug = 0; // set to 2 while debugging
@@ -206,14 +223,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             error_log("PHPMailer debug level $level; message: $str");
                         };
 
-                        // SMTP config - **PHẢI** thay thông tin bên dưới bằng thông tin thực của bạn
+                        // SMTP config from env/mail_config.php
                         $mail->isSMTP();
-                        $mail->Host = 'smtp.gmail.com';
+                        $mail->Host = $smtpHost;
                         $mail->SMTPAuth = true;
-                        $mail->Username = 'minhdong9678@gmail.com';            // <<< your Gmail here
-                        $mail->Password = 'svtu hbay wdzd wkwa';         // <<< APP PASSWORD (not your Google account password)
-                        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-                        $mail->Port = 587;
+                        $mail->Username = $smtpUser;
+                        $mail->Password = $smtpPass;
+                        $mail->SMTPSecure = strtolower((string)$smtpSecure) === 'ssl'
+                            ? PHPMailer::ENCRYPTION_SMTPS
+                            : PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port = $smtpPort > 0 ? $smtpPort : 587;
 
                         // Optional: in some environments with self-signed certs
                         $mail->SMTPOptions = [
@@ -225,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ];
 
                         // Use same From as Username to reduce rejections
-                        $mail->setFrom($mail->Username, 'No Reply');
+                        $mail->setFrom($fromEmail ?: $smtpUser, $siteName ?: 'No Reply');
                         $mail->addAddress($email, $name ?: '');
 
                         $mail->isHTML(false);
@@ -236,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $mail->send();
                         $sent = true;
                         error_log("REGISTER INFO: PHPMailer (SMTP) sent to {$email} (code {$code})");
-                    } catch (\PHPMailer\PHPMailer\Exception $e) {
+                    } catch (PHPMailerException $e) {
                         $sent = false;
                         error_log("REGISTER ERROR: PHPMailer exception: " . $e->getMessage());
                     } catch (\Throwable $t) {
