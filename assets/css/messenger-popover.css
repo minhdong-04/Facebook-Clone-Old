@@ -1,0 +1,1339 @@
+/* Shared Messenger popover styles (ported from pages/home.php)
+   NOTE: Uses local variables to avoid requiring --app-border/--app-sprite-filter on every page. */
+
+:root {
+  --mp-border: var(--app-border, var(--search-border, rgba(0, 0, 0, 0.06)));
+  --mp-sprite-filter: var(--app-sprite-filter, var(--sprite-filter, none));
+}
+
+/* ================= Messenger popover ================= */
+.messenger-popover {
+  /* CHỈNH VỊ TRÍ POPUP:
+       - --mp-offset-y: khoảng cách so với đáy header (có thể âm để “xích lên”)
+       - --mp-right-pad: căn mép phải popup theo padding của header
+    */
+  --mp-offset-y: -6px;
+  --mp-right-pad: 28px;
+  position: fixed;
+  width: 360px;
+  height: 650px;
+  background: var(--app-surface-bg);
+  color: var(--app-text);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  border: 1px solid var(--mp-border);
+  overflow: hidden;
+  z-index: 2000;
+  display: none;
+}
+
+.messenger-popover.open {
+  display: flex;
+  flex-direction: column;
+}
+
+.mp-header {
+  height: 56px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mp-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.mp-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mp-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--app-muted);
+}
+
+.mp-icon:hover {
+  background: var(--icon-hover-bg);
+}
+
+.mp-icon.is-open {
+  background: var(--app-hover);
+}
+
+.mp-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+/* ================= Messenger options (Chat settings) ================= */
+.mp-options-menu {
+  position: fixed;
+  display: none;
+  width: 340px;
+  background: var(--app-surface-bg);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  border: 1px solid var(--mp-border);
+  z-index: 2000;
+  padding: 0;
+  overflow: visible;
+
+  /* FB-like anchor behavior (right edge anchored to button)
+       You can tweak these without JS overriding them. */
+  --mp-options-shift-x: -2px;
+  --mp-options-caret-left: 0px;
+}
+
+.mp-options-scroll {
+  max-height: 550px;
+  overflow: auto;
+  padding: 8px 0;
+  border-radius: 12px;
+  background: var(--app-surface-bg);
+}
+
+.mp-options-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  /* khoảng cách với menu */
+  left: var(--mp-options-caret-left);
+
+  width: 0;
+  height: 0;
+
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid var(--app-surface-bg);
+
+  transform: translateX(-50%);
+}
+
+.mp-options-menu.open {
+  display: block;
+}
+
+.mp-opts-head {
+  padding: 8px 12px 6px;
+}
+
+.mp-opts-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--app-text);
+  margin-bottom: 2px;
+}
+
+.mp-opts-sub {
+  font-size: 13px;
+  color: var(--app-muted);
+  line-height: 1.25;
+}
+
+.mp-opts-divider {
+  /* Divider (đường kẻ ngang) dùng để chia nhóm giống Facebook.
+       Cách dùng:
+       - Chèn vào HTML: <div class="mp-opts-divider" role="separator"></div>
+       - Muốn sát hơn (như ngay dưới header hoặc dưới 1 item): thêm class `is-tight`.
+       Tùy chỉnh:
+       - Độ đậm/nhạt: đổi `background`
+       - Khoảng cách: đổi `margin`
+    */
+  height: 1.25px;
+  background: var(--mp-border);
+  margin: 8px 16px;
+}
+
+.mp-opts-divider.is-tight {
+  margin: 6px 16px;
+}
+
+.mp-opts-row {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  padding: 3px 12px;
+  text-align: left;
+  color: var(--app-text);
+}
+
+.mp-opts-row:hover {
+  background: var(--hover-bg);
+}
+
+.mp-opts-row:focus {
+  outline: none;
+}
+
+.mp-opts-row:focus-visible {
+  box-shadow: 0 0 0 2px rgba(8, 102, 255, .85) inset;
+  border-radius: 10px;
+  background: var(--app-surface-bg);
+}
+
+.mp-opts-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mp-opts-ico {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-muted);
+  flex-shrink: 0;
+}
+
+/* Icon sprite (giống Facebook) cho một vài item trong menu.
+     Dùng khi bạn muốn icon đúng y hệt sprite PNG của FB thay vì SVG.
+     - Base class: `.mp-ico-sprite`
+     - Từng icon cụ thể: thêm class kiểu `.mp-ico-call-sound` để set background-position.
+  */
+.mp-ico-sprite {
+  width: 20px;
+  height: 20px;
+  background-image: url('https://static.xx.fbcdn.net/rsrc.php/v4/yz/r/wrC8dZBs6J6.png');
+  background-position: 0 0;
+  background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+  filter: var(--mp-sprite-filter);
+}
+
+.mp-ico-call-sound {
+  background-position: 0 -168px;
+}
+
+.mp-ico-message-sound {
+  background-image: url('https://static.xx.fbcdn.net/rsrc.php/v4/yv/r/qIiumBTWeGK.png');
+  background-position: 0 -180px;
+}
+
+.mp-ico-new-message-pop {
+  /* Icon “Tin nhắn mới bật lên” theo sprite bạn gửi */
+  background-position: 0 0;
+}
+
+.mp-ico-active-status {
+  /* Icon “Trạng thái hoạt động” theo sprite bạn gửi */
+  background-position: 0 -21px;
+}
+
+.mp-ico-requests {
+  /* Icon “Tin nhắn đang chờ” theo sprite bạn gửi */
+  background-image: url('https://static.xx.fbcdn.net/rsrc.php/v4/y0/r/4tVh2_pWBuE.png');
+  background-position: 0 -201px;
+}
+
+.mp-ico-archived {
+  /* Icon “Đoạn chat đã lưu trữ” theo sprite bạn gửi */
+  background-image: url('https://static.xx.fbcdn.net/rsrc.php/v4/yq/r/ZC1GVF1R9Xm.png');
+  background-position: 0 -264px;
+}
+
+.mp-ico-delivery {
+  /* Icon “Cài đặt gửi tin nhắn” theo sprite bạn gửi */
+  background-position: 0 -84px;
+}
+
+.mp-ico-restricted {
+  /* Icon “Tài khoản đã hạn chế” theo sprite bạn gửi */
+  background-position: 0 -63px;
+}
+
+.mp-ico-blocking {
+  /* Icon “Cài đặt chặn” theo sprite bạn gửi */
+  background-position: 0 -189px;
+}
+
+.mp-opts-ico svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+.mp-opts-text {
+  min-width: 0;
+}
+
+.mp-opts-label {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-opts-desc {
+  font-size: 13px;
+  color: var(--app-muted);
+  margin-top: 3px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-opts-right {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-switch {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--app-icon-bg);
+  position: relative;
+  transition: background-color .16s ease;
+}
+
+.mp-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--app-surface-bg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+  transition: transform .16s ease;
+}
+
+.mp-opts-row[role="switch"][aria-checked="true"] .mp-switch {
+  background: var(--fb-blue);
+}
+
+.mp-opts-row[role="switch"][aria-checked="true"] .mp-switch::after {
+  transform: translateX(20px);
+}
+
+.mp-chevron svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  display: block;
+}
+
+.mp-chevron {
+  color: var(--app-muted);
+}
+
+.mp-search {
+  padding: 0 12px 10px;
+}
+
+.mp-searchbox {
+  height: 40px;
+  border-radius: 999px;
+  background: var(--search-bg);
+  /* messenger search follows theme */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  color: var(--search-placeholder);
+}
+
+.mp-searchbox svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--search-placeholder);
+  flex-shrink: 0;
+}
+
+.mp-searchbox input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 15px;
+  color: var(--search-text);
+  /* typed text follows theme */
+}
+
+.mp-searchbox input::placeholder {
+  color: var(--search-placeholder);
+}
+
+.mp-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 12px 10px;
+  position: relative;
+}
+
+.mp-tab {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-text);
+  transition: background-color .16s ease, color .16s ease;
+}
+
+.mp-tab:not(.active):hover {
+  background: var(--app-hover);
+}
+
+.mp-tab:focus {
+  outline: none;
+}
+
+.mp-tab:focus-visible {
+  outline: 2px solid rgba(8, 102, 255, .55);
+  outline-offset: 2px;
+}
+
+.mp-tab.active {
+  background: var(--app-hover);
+  color: var(--fb-blue);
+}
+
+.mp-tab.mp-more-btn {
+  padding: 8px 10px;
+  font-size: 18px;
+  line-height: 1;
+  width: 40px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-tab.mp-more-btn.is-open {
+  background: var(--app-hover);
+}
+
+.mp-more-menu {
+  position: absolute;
+  display: none;
+  min-width: 150px;
+  background: var(--app-surface-bg);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+  border: 1px solid var(--mp-border);
+  padding: 6px;
+  z-index: 10;
+}
+
+.mp-more-menu.open {
+  display: block;
+}
+
+.mp-more-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+  color: var(--app-text);
+}
+
+.mp-more-item:hover {
+  background: var(--app-hover);
+}
+
+.mp-content {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  padding: 8px 0;
+  color: var(--app-text);
+}
+
+.mp-conv-list {
+  display: none;
+}
+
+.mp-conv-list.has-items {
+  display: block;
+}
+
+.mp-conv-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  color: var(--app-text);
+}
+
+button.mp-conv-item {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  padding: 10px 12px;
+  gap: 12px;
+}
+
+button.mp-conv-item:focus-visible {
+  outline: 2px solid var(--fb-blue);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+.mp-conv-item:hover {
+  background: var(--app-hover);
+}
+
+.mp-conv-open {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px;
+  text-align: left;
+  color: inherit;
+}
+
+.mp-conv-open:focus-visible {
+  outline: 2px solid var(--fb-blue);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+.mp-conv-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--app-icon-bg);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-conv-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mp-conv-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.mp-conv-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--app-muted);
+}
+
+.mp-conv-preview-text {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-conv-sep,
+.mp-conv-time {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  color: var(--app-muted);
+}
+
+.mp-conv-sep[hidden],
+.mp-conv-time[hidden] {
+  display: none;
+}
+
+.mp-conv-more {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--app-muted);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.mp-conv-more:hover {
+  background: var(--app-hover);
+}
+
+.mp-conv-more:focus-visible {
+  outline: 2px solid var(--fb-blue);
+  outline-offset: 2px;
+}
+
+.mp-conv-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--fb-blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.mp-conv-badge[hidden] {
+  display: none;
+}
+
+.mp-conv-name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.mp-conv-preview {
+  font-size: 13px;
+  color: var(--app-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--app-muted);
+}
+
+.mp-empty h4 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--app-muted);
+}
+
+.mp-empty p {
+  font-size: 14px;
+  color: var(--app-muted);
+}
+
+/* ================= Mini chat window ================= */
+.mp-mini {
+  position: fixed;
+  right: 80px;
+  bottom: 1px;
+  width: 320px;
+  height: 420px;
+  background: var(--app-surface-bg);
+  color: var(--app-text);
+  /* Map Home chat tokens -> shared theme tokens */
+  --fb-hover: var(--app-hover);
+  --fb-text: var(--app-text);
+  --fb-muted: var(--app-muted);
+  --fb-input: var(--search-bg, var(--app-hover));
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  border: 1px solid var(--mp-border);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  z-index: 3100;
+}
+
+.mp-mini.open {
+  display: flex;
+}
+
+.mp-mini-header {
+  height: 56px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--mp-border);
+}
+
+.mp-mini-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-mini-peer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mp-mini-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--app-icon-bg);
+  flex-shrink: 0;
+}
+
+.mp-mini-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mp-mini-peertext {
+  min-width: 0;
+}
+
+.mp-mini-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mp-mini-name {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-mini-sub {
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+.mp-mini-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--app-muted);
+}
+
+.mp-mini-caret {
+  width: 28px;
+  height: 28px;
+}
+
+.mp-mini-btn:hover {
+  background: var(--app-hover);
+}
+
+.mp-mini-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.mp-mini-messages {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+  background: var(--app-surface-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mp-mini-msg {
+  max-width: 78%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mp-mini-msg.sent {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.mp-mini-msg.received {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.mp-mini-bubble {
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.35;
+  word-wrap: break-word;
+}
+
+.mp-mini-msg.sent .mp-mini-bubble {
+  background: var(--fb-blue);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.mp-mini-msg.received .mp-mini-bubble {
+  background: var(--app-icon-bg);
+  color: var(--app-text);
+  border-bottom-left-radius: 4px;
+}
+
+.mp-mini-bubble img {
+  max-width: 220px;
+  border-radius: 12px;
+  display: block;
+}
+
+.mp-mini-bubble audio {
+  max-width: 240px;
+}
+
+.mp-mini-time {
+  font-size: 11px;
+  color: var(--app-muted);
+  margin-top: 2px;
+}
+
+/* Seen avatar marker (DM-style) */
+.mp-mini-seen {
+  margin-top: 4px;
+  width: 100%;
+  display: flex;
+}
+
+.mp-mini-msg.sent .mp-mini-seen {
+  justify-content: flex-end;
+}
+
+.mp-mini-seen-avatar {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--app-icon-bg);
+}
+
+.mp-mini-seen-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== Mini chat composer (match Home) ===== */
+.mp-mini .fb-chat-foot {
+  padding: 6px 8px 10px;
+  border-top: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+/* Home-like: collapse 4 tools into a + button when composing multi-line */
+.mp-mini #mpMiniToolPlus {
+  display: none;
+}
+
+.mp-mini .fb-chat-foot.is-tools-collapsed #mpMiniToolPlus {
+  display: inline-flex;
+  background: var(--fb-input);
+}
+
+.mp-mini .fb-chat-foot.is-tools-collapsed #mpMiniToolMic,
+.mp-mini .fb-chat-foot.is-tools-collapsed #mpMiniToolPhoto,
+.mp-mini .fb-chat-foot.is-tools-collapsed #mpMiniToolSticker,
+.mp-mini .fb-chat-foot.is-tools-collapsed #mpMiniToolGif {
+  display: none;
+}
+
+.mp-mini .fb-chat-tool {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--fb-blue);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.mp-mini .fb-chat-tool svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.mp-mini .fb-chat-tool.is-recording {
+  background: var(--fb-blue);
+  color: #fff;
+}
+
+.mp-mini .fb-chat-tool:hover {
+  background: var(--fb-hover);
+}
+
+.mp-mini #mpMiniToolGif {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .4px;
+}
+
+.mp-mini .fb-chat-input-wrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  height: auto;
+  border-radius: 18px;
+  background: var(--fb-input);
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px 6px 12px;
+  gap: 6px;
+}
+
+.mp-mini .fb-chat-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 18px;
+  max-height: 120px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fb-text);
+  padding: 4px 0;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.25;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mp-mini .fb-chat-input::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.mp-mini .fb-chat-input[contenteditable="true"]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--fb-muted);
+}
+
+.mp-mini .fb-chat-input-ico {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--fb-blue);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.mp-mini .fb-chat-input-ico:hover {
+  background: var(--fb-hover);
+}
+
+.mp-mini .fb-chat-input-ico svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.mp-mini .fb-chat-like,
+.mp-mini .fb-chat-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--fb-blue);
+  cursor: pointer;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.mp-mini .fb-chat-like svg,
+.mp-mini .fb-chat-send svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.mp-mini .fb-chat-like:hover,
+.mp-mini .fb-chat-send:hover {
+  background: var(--fb-hover);
+}
+
+.mp-mini .fb-chat-send[hidden] {
+  display: none;
+}
+
+.mp-mini .fb-chat-like[hidden] {
+  display: none;
+}
+
+.mp-mini .fb-chat-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== Mini emoji picker (simple) ===== */
+.mp-mini {
+  position: fixed;
+}
+
+.mp-mini .fb-emoji-pop {
+  position: absolute;
+  right: 56px;
+  bottom: 56px;
+  width: 240px;
+  background: var(--app-surface-bg);
+  border: 1px solid var(--mp-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  padding: 10px;
+  display: none;
+  z-index: 5;
+}
+
+.mp-mini .fb-emoji-pop.is-open {
+  display: block;
+}
+
+.mp-mini .fb-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+.mp-mini .fb-emoji-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.mp-mini .fb-emoji-btn:hover {
+  background: var(--app-hover);
+}
+
+.mp-footer {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--mp-border);
+}
+
+.mp-footer a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--fb-blue);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.mp-footer a svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.mp-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ================= Compose (Tin nhắn mới) ================= */
+.mp-compose {
+  position: fixed;
+  right: 80px;
+  bottom: 1px;
+  width: 290px;
+  height: 400px;
+  background: var(--app-surface-bg);
+  color: var(--app-text);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  border: 1px solid var(--mp-border);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  z-index: 3000;
+}
+
+.mp-compose.open {
+  display: flex;
+}
+
+.mp-compose-header {
+  height: 56px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mp-compose-title {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.1px;
+}
+
+.mp-compose-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--app-muted);
+}
+
+.mp-compose-close:hover {
+  background: var(--app-hover);
+}
+
+.mp-compose-close svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: currentColor;
+}
+
+.mp-compose-to {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mp-compose-to-label {
+  font-size: 15px;
+  color: var(--app-muted);
+  flex-shrink: 0;
+  margin-bottom: 20px;
+  position: relative;
+  top: 8px;
+}
+
+.mp-compose-to-input {
+  border: none;
+  outline: none;
+  font-size: 15px;
+  flex: 1;
+  padding: 6px 0;
+  min-width: 0;
+  background: transparent;
+  color: var(--app-text);
+  caret-color: var(--app-text);
+}
+
+.mp-compose-to-input::placeholder {
+  color: var(--app-muted);
+}
+
+.mp-compose-divider {
+  height: 1px;
+  background: var(--mp-border);
+}
+
+.mp-compose-list {
+  padding: 8px 0;
+  overflow: auto;
+  flex: 1;
+}
+
+.mp-compose-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mp-compose-item:hover {
+  background: var(--app-hover);
+}
+
+.mp-compose-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: var(--app-icon-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.mp-compose-avatar.meta-ai {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-compose-avatar.meta-ai::before {
+  content: '';
+  display: none;
+}
+
+.mp-compose-avatar.meta-ai .mp-metaai-ring {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+
+.mp-compose-avatar.meta-ai .mp-metaai-ring-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid var(--mp-border);
+  pointer-events: none;
+}
+
+.mp-compose-avatar.user::before {
+  content: '';
+  display: none;
+}
+
+.mp-compose-avatar.user::after {
+  content: '';
+  display: none;
+}
+
+.mp-compose-avatar.user {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-compose-avatar.user .mp-user-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+}
+
+.mp-compose-avatar.user .mp-user-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid var(--mp-border);
+  pointer-events: none;
+}
+
+.mp-compose-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--app-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mp-compose-verified {
+  width: 12px;
+  height: 12px;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fb-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-compose-verified svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  display: block;
+}

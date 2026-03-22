@@ -1,0 +1,93 @@
+/* Global theme overrides (dark/light/auto)
+   Uses existing app variables already present across pages.
+*/
+
+:where(html, body)[data-theme="light"] {
+  color-scheme: light;
+
+  --app-sprite-filter: none;
+}
+
+:where(html, body)[data-theme="dark"] {
+  color-scheme: dark;
+
+  --app-page-bg: #18191a;
+  --app-surface-bg: #242526;
+  --app-text: #e4e6eb;
+  --app-muted: #b0b3b8;
+  --app-hover: rgba(255, 255, 255, 0.06);
+  --app-icon-bg: rgba(255, 255, 255, 0.10);
+  --app-input-bg: rgba(255, 255, 255, 0.08);
+  --app-border: rgba(255, 255, 255, 0.12);
+  --app-active-pill-bg: #242526;
+  --icon-hover-bg: rgba(255, 255, 255, 0.10);
+  --search-bg: rgba(255, 255, 255, 0.10);
+  --search-text: #e4e6eb;
+  --search-placeholder: #b0b3b8;
+  --search-border: rgba(255, 255, 255, 0.12);
+
+  /* For FB sprite PNG icons (black on transparent) */
+  --app-sprite-filter: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :where(html, body)[data-theme="auto"] {
+    color-scheme: dark;
+
+    --app-page-bg: #18191a;
+    --app-surface-bg: #242526;
+    --app-text: #e4e6eb;
+    --app-muted: #b0b3b8;
+    --app-hover: rgba(255, 255, 255, 0.06);
+    --app-icon-bg: rgba(255, 255, 255, 0.10);
+    --app-input-bg: rgba(255, 255, 255, 0.08);
+    --app-border: rgba(255, 255, 255, 0.12);
+    --app-active-pill-bg: #242526;
+    --icon-hover-bg: rgba(255, 255, 255, 0.10);
+    --search-bg: rgba(255, 255, 255, 0.10);
+    --search-text: #e4e6eb;
+    --search-placeholder: #b0b3b8;
+    --search-border: rgba(255, 255, 255, 0.12);
+
+    /* For FB sprite PNG icons (black on transparent) */
+    --app-sprite-filter: invert(1);
+  }
+}
+
+/* Baseline page background/text (covers pages using vars) */
+:where(html, body)[data-theme] body {
+  background-color: var(--app-page-bg);
+  color: var(--app-text);
+}
+
+/* Fallback overrides for legacy hard-coded styles in assets/css/style.css */
+:where(html, body)[data-theme="dark"] body {
+  background: var(--app-page-bg) !important;
+  color: var(--app-text) !important;
+}
+
+:where(html, body)[data-theme="dark"] .fb-header,
+:where(html, body)[data-theme="dark"] .header {
+  background: var(--app-surface-bg) !important;
+  color: var(--app-text) !important;
+}
+
+:where(html, body)[data-theme="dark"] .create-post,
+:where(html, body)[data-theme="dark"] .post,
+:where(html, body)[data-theme="dark"] .sidebar,
+:where(html, body)[data-theme="dark"] .feed {
+  background: var(--app-surface-bg) !important;
+  color: var(--app-text) !important;
+}
+
+:where(html, body)[data-theme="dark"] .fb-header nav a {
+  color: var(--app-text) !important;
+}
+
+:where(html, body)[data-theme="dark"] input,
+:where(html, body)[data-theme="dark"] textarea,
+:where(html, body)[data-theme="dark"] select {
+  background: var(--app-input-bg) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}

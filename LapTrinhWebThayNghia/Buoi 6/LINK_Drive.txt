@@ -1,0 +1,13 @@
+Link Drive TH LTWEB
+	https://drive.google.com/drive/folders/10jBSKgsnNv-Fz31Wd6lO9k5r9wEhA9rr?usp=drive_link
+
+Link Drive LT LTWEB
+	https://drive.google.com/drive/folders/1XIEAq-nMQt4vo4aLsQ4Mb0_2FrO-yOG1?usp=sharing
+
+URL extensions vscode: C:\Users\Administrator
+	-> Giải nén .vscode_PM3.rar (Extract Here) -> copy thư mực .vscode vào URL trên
+
+
+
+
+https://stu-nghia.info/ltweb/lab06/
