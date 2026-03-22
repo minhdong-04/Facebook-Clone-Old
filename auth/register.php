@@ -16,7 +16,7 @@ require_once __DIR__ . '/../vendor/PHPMailer-master/src/SMTP.php';
 
 // sau khi đã sinh $code, thay phần mail() bằng PHPMailer:
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPMailer\PHPMailer\Exception;
 
 // ---------- helper functions ----------
 function e($s)
@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $fromEmail = getenv('FB_FROM_EMAIL') ?: ($mailConfig['FROM_EMAIL'] ?? $smtpUser);
                 $siteName = getenv('FB_SITE_NAME') ?: ($mailConfig['SITE_NAME'] ?? 'Facebook');
 
-                if (class_exists('\PHPMailer\PHPMailer\PHPMailer')) {
+                if (class_exists(PHPMailer::class)) {
                     try {
                         $mail = new PHPMailer(true);
 
@@ -255,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $mail->send();
                         $sent = true;
                         error_log("REGISTER INFO: PHPMailer (SMTP) sent to {$email} (code {$code})");
-                    } catch (PHPMailerException $e) {
+                    } catch (Exception $e) {
                         $sent = false;
                         error_log("REGISTER ERROR: PHPMailer exception: " . $e->getMessage());
                     } catch (\Throwable $t) {
